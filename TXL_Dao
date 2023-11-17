@@ -1,0 +1,120 @@
+package CS_3_TongXunLu;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class TXL_Dao {
+
+    //链接数据库
+    public static class DBUtil{//数据库建立连接
+        static String url="jdbc:mysql:"+"//localhost:3306/testdb";
+        static String root="root";
+        static String password="root123";
+        static{
+            try{
+                Class.forName("com.mysql.jdbc.Driver");
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        public static Connection getCon(){
+            Connection con=null;
+            try{
+                con= DriverManager.getConnection(url,root,password);
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+            return con;
+        }
+    }
+
+    public interface TongxunluDao{
+        //add
+        public void add(Tongxunlu Tongxunlu);//抽象方法没有方法体
+        //修改
+        public void update(String name,Tongxunlu Tongxunlu);
+        //删除
+        public void delete(String name);
+        //查询
+        public List<Tongxunlu> findAll();
+    }
+
+    public static class TongxunluDaoImpl implements TongxunluDao {
+
+@Override
+public void add(Tongxunlu Tongxunlu) {
+        Connection con=DBUtil.getCon();
+        String sql="insert into "+
+        "Tongxunlu(name ,number,address)"+" values(?,?,?)";
+        try{
+        PreparedStatement pst=con.prepareStatement(sql);
+        pst.setString(1,Tongxunlu.getName());
+        pst.setString(2,Tongxunlu.getNumber());
+        pst.setString(3,Tongxunlu.getAddress());
+        pst.executeUpdate();
+        }catch(SQLException e){
+        e.printStackTrace();
+        }
+        }
+
+@Override
+public void update(String name, Tongxunlu Tongxunlu) {
+        Connection con=DBUtil.getCon();
+        String sql="UPDATE Tongxunlu SET "+
+        "name=?,number=?,address=?"+" WHERE name=?";
+        try{
+        PreparedStatement pst=con.prepareStatement(sql);
+        pst.setString(1,Tongxunlu.getName());
+        pst.setString(2,Tongxunlu.getNumber());
+        pst.setString(3,Tongxunlu.getAddress());
+        System.out.println(Tongxunlu.getName());
+        System.out.println(Tongxunlu.getNumber());
+        System.out.println(Tongxunlu.getAddress());
+        pst.setString(4,Tongxunlu.getName());
+        pst.executeUpdate();
+        }catch (SQLException e){
+        e.printStackTrace();
+        }
+        }
+
+@Override
+public void delete(String name) {
+        //数据库连接对象
+        Connection con=DBUtil.getCon();
+        //定义sql语句
+        String sql="delete from Tongxunlu where name=?";
+        try{
+        PreparedStatement pst=con.prepareStatement(sql);
+        pst.setString(1,name);
+        pst.executeUpdate();
+        }catch(SQLException e){
+        e.printStackTrace();
+        }
+
+
+        }
+
+@Override
+public List<Tongxunlu> findAll() {
+        List<Tongxunlu> Tongxunlus=new ArrayList<Tongxunlu>();
+        Connection con=DBUtil.getCon();
+        String sql="select * from Tongxunlu";
+        try{
+        PreparedStatement pst=con.prepareStatement(sql);
+        ResultSet rs=pst.executeQuery();
+        while(rs.next()){
+        Tongxunlu use=new Tongxunlu();
+
+        use.setName(rs.getString("name"));
+        use.setNumber(rs.getString("number"));
+        use.setAddress(rs.getString("Address"));
+        Tongxunlus.add(use);
+        }
+        }catch (SQLException e){
+        e.printStackTrace();
+        }
+        return Tongxunlus;
+        }
+        }
+        }
